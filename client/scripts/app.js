@@ -54,26 +54,38 @@ app.clearMessages = function(){
 }
 
 app.addMessage = function(message){
-  $('#chats').append('<div><a class=\'username\' href=\"#\"> ' + message.username + "</a> : " + message.text + '</div>');
+  var chat = '<div class=\'chat\' data=\'' + message.username + '\'><a class=\'username\' href=\"#\"> ' + message.username + "</a> : " + message.text + '</div>';
+  $('#chats').append(chat);
+  $('#chats').children().last().addClass(function() {
+      if(app.friends[this.attributes.data.value]) {
+        return "friend";
+      }
+    });
 
 };
 
 app.addRoom = function(roomname){
   if (!app.chatRooms[roomname]) {
     app.chatRooms[roomname] = true;
-    $('#roomSelect').append('<div><a class = \'chatRooms\' href=\"#\">' + roomname + '</a></div>')
+    $('#roomSelect').append('<div><a class = \'chatRooms\' href=\"#\">' + roomname + '</a></div>');
     // debugger;
-      .click(app.switchChatRoom);
-
   }
 };
 
 app.addFriend = function() {
   console.log("adding friend");
-  var username = this.text;
+  var username = this.text.trim();
   if (!app.friends[username]) {
     app.friends[username] = true;
   };
+  // debugger;
+  $('.chat').addClass(function(index, oldClass){
+    // debugger;
+    if(this.attributes.data.value === username.trim()) {
+      return "friend";
+    }
+  });
+
   updateFriendsList();
 };
 
@@ -120,12 +132,12 @@ var updateChat = function(data){
   var messageList = data.results.slice(0, app.numPost);
   _.each(messageList, function (message){
 
-    // Temporary to see all messages
+    message.username = validator.escape(message.username);
+    message.text = validator.escape(message.text);
+    message.roomname = validator.escape(message.roomname);
+
     // if (app.currentRoom === 'Lobby' || message.roomname === app.currentRoom) {
     if (message.roomname === app.currentRoom) {
-      message.username = validator.escape(message.username);
-      message.text = validator.escape(message.text);
-      message.roomname = validator.escape(message.roomname);
 
       app.addMessage(message)
     }
@@ -133,12 +145,13 @@ var updateChat = function(data){
     app.addRoom(message.roomname);
 
   });
-
+  $('.chatRooms').off("click");
   $('.username').click(app.addFriend);
-
+  $('.chatRooms').click(app.switchChatRoom);
 };
-app.switchChatRoom= function () {
-  console.log("Switching room");
+app.switchChatRoom = function () {
+  console.log("Switching room: " + this.text);
+  // debugger;
   app.currentRoom = this.text;
   $('.currentRoom').text(app.currentRoom);
   $('.refresh').click();
