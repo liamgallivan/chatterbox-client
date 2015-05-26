@@ -7,14 +7,37 @@
 
     <!-- dependencies -->
     <script src="bower_components/jquery/jquery.min.js"></script>
+    <script src="bower_components/underscore/underscore-min.js"></script>
+    <script src="bower_components/validator-js/validator.min.js"></script>
     <!-- your scripts -->
     <script src="env/config.js"></script>
     <script src="scripts/app.js"></script>
+
   </head>
   <body>
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
+      <div>
+        <span>Message: </span>
+        <input class='message' type='text'></input>
+        <button id='send' class='submit'>Submit</button>
+        <button id='refresh' class='refresh'>Refresh</button>
+      </div>
+      <h3>Chat</h3>
+      <div id='chats'></div>
+      <h3>Friends</h3>
+      <div class='friends'>
+      </div>
+      <h2 class='roomName'>Chat Rooms</h2>
+      <div id='roomSelect'> </div>
     </div>
+    <script>
+      $(document).ready(function(){
+        app.init();
+        app.fetch();
+      });
+
+    </script>
   </body>
 </html>
